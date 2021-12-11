@@ -3,3 +3,18 @@ name     = "TMDojo_v2"
 author   = "TMDojo"
 category = "Utilities"
 perms    = "full"
+
+imports = [
+    "Icons.as",
+    "Constants.as",
+    "Settings.as",
+    "Vehicle.as",
+    "Player.as",
+    "DebugOverlay.as",
+    "Dojo.as",
+    "Menu.as",
+    "RecordingOverlay.as",
+    "Api.as",
+    "FinishHandle.as",
+    "AuthWindow.as"
+]
