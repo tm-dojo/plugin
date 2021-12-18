@@ -28,11 +28,10 @@ namespace Api {
                 }
                 if (json.HasKey("authSuccess")) {
                     g_dojo.pluginAuthed = true;
-                    UI::ShowNotification("TMDojo", "Plugin is authenticated!", vec4(0, 0.4, 0, 1));
+                    UI::ShowNotification("TMDojo", "Plugin is authenticated!", SUCCESS_COLOR);
                 }
             } else {
-                UI::ShowNotification("TMDojo", "checkServer() Error: Json response is null", vec4(0.4, 0, 0, 1));
-                error("checkServer server response is not json");
+                UI::ShowNotification("TMDojo", "checkServer() Error: Json response is null", ERROR_COLOR);
             }
             
             g_dojo.serverAvailable = true;
@@ -49,10 +48,16 @@ namespace Api {
             yield();
             sleep(50);
         }
-        UI::ShowNotification("TMDojo", "Plugin logged out!", vec4(0, 0.4, 0, 1));
-        SessionId = "";
-        g_dojo.pluginAuthed = false;
-        checkServer();  
+        
+        int status = req.ResponseCode();
+        if (status == 200) {
+            UI::ShowNotification("TMDojo", "Plugin logged out!", SUCCESS_COLOR);
+            SessionId = "";
+            g_dojo.pluginAuthed = false;
+            checkServer();
+        } else {
+            UI::ShowNotification("TMDojo", "Failed to logout, please try again!", ERROR_COLOR);
+        }
     }
 
     void authenticatePlugin() {
@@ -73,7 +78,7 @@ namespace Api {
             try {
                 Json::Value json = Json::Parse(auth.String());
                 SessionId = json["sessionId"];
-                UI::ShowNotification("TMDojo", "Plugin is authenticated!", vec4(0, 0.4, 0, 1), 10000);
+                UI::ShowNotification("TMDojo", "Plugin is authenticated!", SUCCESS_COLOR, 10000);
                 g_dojo.pluginAuthed = true;
                 ClientCode = "";
                 break;
@@ -83,7 +88,7 @@ namespace Api {
         }
         g_dojo.isAuthenticating = false;
         if (g_dojo.checkSessionIdCount >= MAX_CHECK_SESSION_ID) {
-            UI::ShowNotification("TMDojo", "Plugin authentication took too long, please try again", vec4(0.4, 0, 0, 1), 10000);
+            UI::ShowNotification("TMDojo", "Plugin authentication took too long, please try again", ERROR_COLOR, 10000);
         }
     }
 
@@ -138,8 +143,16 @@ namespace Api {
             while (!req.Finished()) {
                 yield();
             }
-            // TODO: handle upload errors
-            UI::ShowNotification("TMDojo", "Uploaded replay successfully!");
+
+            // Handle error status codes
+            int status = req.ResponseCode();
+            if (status == 401) {
+                UI::ShowNotification("TMDojo", "Upload failed. Not authorized, please log in if you are not logged in.", ERROR_COLOR);
+            } else if (status != 200) {
+                UI::ShowNotification("TMDojo", "Upload failed, status code: " + status, ERROR_COLOR);
+            } else {
+                UI::ShowNotification("TMDojo", "Uploaded replay successfully!", SUCCESS_COLOR);
+            }
         }
         g_dojo.recording = false;
         g_dojo.latestRecordedTime = -6666;

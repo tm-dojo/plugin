@@ -11,3 +11,6 @@ const int MAX_CHECK_SESSION_ID = 60;
 string RED = "\\$f33";
 string GREEN = "\\$9f3";
 string ORANGE = "\\$fb3";
+
+vec4 SUCCESS_COLOR = vec4(0, 0.4, 0, 1);
+vec4 ERROR_COLOR = vec4(0.4, 0, 0, 1);
