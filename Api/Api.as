@@ -89,6 +89,7 @@ namespace Api {
         g_dojo.isAuthenticating = false;
         if (g_dojo.checkSessionIdCount >= MAX_CHECK_SESSION_ID) {
             UI::ShowNotification("TMDojo", "Plugin authentication took too long, please try again", ERROR_COLOR, 10000);
+            g_dojo.checkSessionIdCount = 0;
         }
     }
 
