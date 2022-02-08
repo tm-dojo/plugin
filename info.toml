@@ -5,7 +5,6 @@ category = "Utilities"
 perms    = "full"
 
 imports = [
-    "Icons.as",
     "Constants.as",
     "Settings.as",
     "Vehicle.as",
