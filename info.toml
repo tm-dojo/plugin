@@ -5,10 +5,8 @@ category = "Utilities"
 perms    = "full"
 
 imports = [
-    "Icons.as",
     "Constants.as",
     "Settings.as",
-    "Vehicle.as",
     "Player.as",
     "DebugOverlay.as",
     "Dojo.as",
@@ -18,3 +16,6 @@ imports = [
     "FinishHandle.as",
     "AuthWindow.as"
 ]
+
+[script]
+dependencies = [ "VehicleState" ]

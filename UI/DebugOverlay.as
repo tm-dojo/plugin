@@ -10,65 +10,53 @@ void renderDebugOverlay() {
     UI::Text("LatestRecordedTime: " + g_dojo.latestRecordedTime);
     UI::Text("Buffer Size (bytes): " + g_dojo.membuff.GetSize());
 
-    CSceneVehicleVis@ vis = null;
+    CSceneVehicleVisState@ visState = VehicleState::ViewingPlayerState();
 
-    auto app = GetApp();
-
-    auto sceneVis = app.GameScene;
-    if (@sceneVis != null && @app.Editor == null) {
-        if (@app.CurrentPlayground != null && app.CurrentPlayground.GameTerminals.get_Length() > 0 && @app.CurrentPlayground.GameTerminals[0].GUIPlayer != null) {
-            auto player = Player::GetViewingPlayer();
-            if (player !is null && player.User.Name.Contains(g_dojo.network.PlayerInfo.Name)) {
-                @vis = Vehicle::GetVis(sceneVis, player);
-            }
-        }
-    }
-
-    if (@vis != null) {
+    if (@visState != null) {
         UI::NextColumn();
 
-        UI::Text("Position.x: " + vis.AsyncState.Position.x);
-        UI::Text("Position.y: " + vis.AsyncState.Position.y);
-        UI::Text("Position.z: " + vis.AsyncState.Position.z);
+        UI::Text("Position.x: " + visState.Position.x);
+        UI::Text("Position.y: " + visState.Position.y);
+        UI::Text("Position.z: " + visState.Position.z);
 
-        UI::Text("WorldVel.x: " + vis.AsyncState.WorldVel.x);
-        UI::Text("WorldVel.y: " + vis.AsyncState.WorldVel.y);
-        UI::Text("WorldVel.z: " + vis.AsyncState.WorldVel.z);
+        UI::Text("WorldVel.x: " + visState.WorldVel.x);
+        UI::Text("WorldVel.y: " + visState.WorldVel.y);
+        UI::Text("WorldVel.z: " + visState.WorldVel.z);
 
-        UI::Text("Speed: " + (vis.AsyncState.FrontSpeed * 3.6f));
+        UI::Text("Speed: " + (visState.FrontSpeed * 3.6f));
 
-        UI::Text("InputSteer: " + vis.AsyncState.InputSteer);
+        UI::Text("InputSteer: " + visState.InputSteer);
 
-        UI::Text("WheelAngle: " + vis.AsyncState.FLSteerAngle);
+        UI::Text("WheelAngle: " + visState.FLSteerAngle);
         
-        UI::Text("InputGasPedal: " + vis.AsyncState.InputGasPedal); 
-        UI::Text("InputBrakePedal: " + vis.AsyncState.InputBrakePedal);
+        UI::Text("InputGasPedal: " + visState.InputGasPedal); 
+        UI::Text("InputBrakePedal: " + visState.InputBrakePedal);
 
-        UI::Text("EngineCurGear: " + vis.AsyncState.CurGear);
-        UI::Text("EngineRpm: " + Vehicle::GetRPM(vis.AsyncState));
+        UI::Text("EngineCurGear: " + visState.CurGear);
+        UI::Text("EngineRpm: " + VehicleState::GetRPM(visState));
 
-        UI::Text("Up.x: " + vis.AsyncState.Up.x);
-        UI::Text("Up.y: " + vis.AsyncState.Up.y);
-        UI::Text("Up.z: " + vis.AsyncState.Up.z);
+        UI::Text("Up.x: " + visState.Up.x);
+        UI::Text("Up.y: " + visState.Up.y);
+        UI::Text("Up.z: " + visState.Up.z);
 
-        UI::Text("Dir.x: " + vis.AsyncState.Dir.x);
-        UI::Text("Dir.y: " + vis.AsyncState.Dir.y);
-        UI::Text("Dir.z: " + vis.AsyncState.Dir.z);
+        UI::Text("Dir.x: " + visState.Dir.x);
+        UI::Text("Dir.y: " + visState.Dir.y);
+        UI::Text("Dir.z: " + visState.Dir.z);
 
-        UI::Text("FLGroundContactMaterial: " + vis.AsyncState.FLGroundContactMaterial);
-        UI::Text("FRGroundContactMaterial: " + vis.AsyncState.FRGroundContactMaterial);
-        UI::Text("RLGroundContactMaterial: " + vis.AsyncState.RLGroundContactMaterial);
-        UI::Text("RRGroundContactMaterial: " + vis.AsyncState.RRGroundContactMaterial);
+        UI::Text("FLGroundContactMaterial: " + visState.FLGroundContactMaterial);
+        UI::Text("FRGroundContactMaterial: " + visState.FRGroundContactMaterial);
+        UI::Text("RLGroundContactMaterial: " + visState.RLGroundContactMaterial);
+        UI::Text("RRGroundContactMaterial: " + visState.RRGroundContactMaterial);
         
-        UI::Text("FLSlipCoef: " + vis.AsyncState.FLSlipCoef);
-        UI::Text("FRSlipCoef: " + vis.AsyncState.FRSlipCoef);
-        UI::Text("RLSlipCoef: " + vis.AsyncState.RLSlipCoef);
-        UI::Text("RRSlipCoef: " + vis.AsyncState.RRSlipCoef);
+        UI::Text("FLSlipCoef: " + visState.FLSlipCoef);
+        UI::Text("FRSlipCoef: " + visState.FRSlipCoef);
+        UI::Text("RLSlipCoef: " + visState.RLSlipCoef);
+        UI::Text("RRSlipCoef: " + visState.RRSlipCoef);
 
-        UI::Text("FLDamperLen: " + vis.AsyncState.FLDamperLen);
-        UI::Text("FRDamperLen: " + vis.AsyncState.FRDamperLen);
-        UI::Text("RLDamperLen: " + vis.AsyncState.RLDamperLen);
-        UI::Text("RRDamperLen: " + vis.AsyncState.RRDamperLen);
+        UI::Text("FLDamperLen: " + visState.FLDamperLen);
+        UI::Text("FRDamperLen: " + visState.FRDamperLen);
+        UI::Text("RLDamperLen: " + visState.RLDamperLen);
+        UI::Text("RRDamperLen: " + visState.RRDamperLen);
     }
 
     UI::End();

@@ -38,61 +38,61 @@ class TMDojo
         startnew(Api::checkServer);
     }
 
-    void FillBuffer(CSceneVehicleVis@ vis, CSmScriptPlayer@ sm_script) {
+    void FillBuffer(CSceneVehicleVisState@ vis, CSmScriptPlayer@ sm_script) {
         int gazAndBrake = 0;
-        int gazPedal = vis.AsyncState.InputGasPedal > 0 ? 1 : 0;
-        int isBraking = vis.AsyncState.InputBrakePedal > 0 ? 2 : 0;
+        int gazPedal = vis.InputGasPedal > 0 ? 1 : 0;
+        int isBraking = vis.InputBrakePedal > 0 ? 2 : 0;
 
         gazAndBrake |= gazPedal;
         gazAndBrake |= isBraking;
 
         membuff.Write(g_dojo.currentRaceTime);
 
-        membuff.Write(vis.AsyncState.Position.x);
-        membuff.Write(vis.AsyncState.Position.y);
-        membuff.Write(vis.AsyncState.Position.z);
+        membuff.Write(vis.Position.x);
+        membuff.Write(vis.Position.y);
+        membuff.Write(vis.Position.z);
 
-        membuff.Write(vis.AsyncState.WorldVel.x);
-        membuff.Write(vis.AsyncState.WorldVel.y);
-        membuff.Write(vis.AsyncState.WorldVel.z);
+        membuff.Write(vis.WorldVel.x);
+        membuff.Write(vis.WorldVel.y);
+        membuff.Write(vis.WorldVel.z);
 
-        membuff.Write(vis.AsyncState.FrontSpeed * 3.6f);
+        membuff.Write(vis.FrontSpeed * 3.6f);
 
-        membuff.Write(vis.AsyncState.InputSteer);
-        membuff.Write(vis.AsyncState.FLSteerAngle);
+        membuff.Write(vis.InputSteer);
+        membuff.Write(vis.FLSteerAngle);
 
         membuff.Write(gazAndBrake);
 
-        membuff.Write(Vehicle::GetRPM(vis.AsyncState));
-        membuff.Write(vis.AsyncState.CurGear);
+        membuff.Write(VehicleState::GetRPM(vis));
+        membuff.Write(vis.CurGear);
 
-        membuff.Write(vis.AsyncState.Up.x);
-        membuff.Write(vis.AsyncState.Up.y);
-        membuff.Write(vis.AsyncState.Up.z);
+        membuff.Write(vis.Up.x);
+        membuff.Write(vis.Up.y);
+        membuff.Write(vis.Up.z);
 
-        membuff.Write(vis.AsyncState.Dir.x);
-        membuff.Write(vis.AsyncState.Dir.y);
-        membuff.Write(vis.AsyncState.Dir.z);
+        membuff.Write(vis.Dir.x);
+        membuff.Write(vis.Dir.y);
+        membuff.Write(vis.Dir.z);
 
-        uint8 fLGroundContactMaterial = vis.AsyncState.FLGroundContactMaterial;
+        uint8 fLGroundContactMaterial = vis.FLGroundContactMaterial;
         membuff.Write(fLGroundContactMaterial);
-        membuff.Write(vis.AsyncState.FLSlipCoef);
-        membuff.Write(vis.AsyncState.FLDamperLen);
+        membuff.Write(vis.FLSlipCoef);
+        membuff.Write(vis.FLDamperLen);
 
-        uint8 fRGroundContactMaterial = vis.AsyncState.FRGroundContactMaterial;
+        uint8 fRGroundContactMaterial = vis.FRGroundContactMaterial;
         membuff.Write(fRGroundContactMaterial);
-        membuff.Write(vis.AsyncState.FRSlipCoef);
-        membuff.Write(vis.AsyncState.FRDamperLen);
+        membuff.Write(vis.FRSlipCoef);
+        membuff.Write(vis.FRDamperLen);
 
-        uint8 rLGroundContactMaterial = vis.AsyncState.RLGroundContactMaterial;
+        uint8 rLGroundContactMaterial = vis.RLGroundContactMaterial;
         membuff.Write(rLGroundContactMaterial);
-        membuff.Write(vis.AsyncState.RLSlipCoef);
-        membuff.Write(vis.AsyncState.RLDamperLen);
+        membuff.Write(vis.RLSlipCoef);
+        membuff.Write(vis.RLDamperLen);
 
-        uint8 rRGroundContactMaterial = vis.AsyncState.RRGroundContactMaterial;
+        uint8 rRGroundContactMaterial = vis.RRGroundContactMaterial;
         membuff.Write(rRGroundContactMaterial);
-        membuff.Write(vis.AsyncState.RRSlipCoef);
-        membuff.Write(vis.AsyncState.RRDamperLen);
+        membuff.Write(vis.RRSlipCoef);
+        membuff.Write(vis.RRDamperLen);
     }
 
     void Render()
@@ -116,11 +116,12 @@ class TMDojo
             return;
         }
 
-        CSceneVehicleVis@ vis = null;
+        CSceneVehicleVisState@ vis = null;
 
-		auto player = Player::GetViewingPlayer();
+		CSmPlayer@ player = Player::GetViewingPlayer();
+
 		if (player !is null && player.User.Name.Contains(network.PlayerInfo.Name)) {
-			@vis = Vehicle::GetVis(sceneVis, player);
+			@vis = VehicleState::ViewingPlayerState();
 		}
 
 		if (vis is null) {
@@ -162,7 +163,7 @@ class TMDojo
             drawRecordingOverlay();
         }
 
-        if (!recording && g_dojo.currentRaceTime > -50 && g_dojo.currentRaceTime < 0) {
+        if (!recording && g_dojo.currentRaceTime > -200 && g_dojo.currentRaceTime < 0) {
             recording = true;
         }
 
