@@ -100,11 +100,11 @@ class TMDojo
 		auto app = GetApp();
 
 		auto sceneVis = app.GameScene;
-		if (sceneVis is null || app.Editor != null) {
+		if (@sceneVis is null || @app.Editor != null) {
 			return;
 		}
 
-        if (app.CurrentPlayground == null || app.CurrentPlayground.GameTerminals.get_Length() == 0 || app.CurrentPlayground.GameTerminals[0].GUIPlayer == null) {
+        if (@app.CurrentPlayground == null || app.CurrentPlayground.GameTerminals.get_Length() == 0 || @app.CurrentPlayground.GameTerminals[0].GUIPlayer == null) {
             return;
         }
 
@@ -112,7 +112,7 @@ class TMDojo
         CGamePlaygroundUIConfig@ uiConfig = app.CurrentPlayground.UIConfigs[0];
         CGameCtnChallenge@ rootMap = app.RootMap;
 
-        if (sm_script == null) {
+        if (@sm_script == null) {
             return;
         }
 
@@ -143,10 +143,10 @@ class TMDojo
         if (app.CurrentPlayground !is null && app.CurrentPlayground.Interface !is null) {
             if (Dev::GetOffsetUint32(app.CurrentPlayground.Interface, 0x1C) == 0) {
                 hudOff = true;
-                if (playgroundScript == null) {
-                    if (app.Network.PlaygroundClientScriptAPI != null) {
+                if (@playgroundScript == null) {
+                    if (@app.Network.PlaygroundClientScriptAPI != null) {
                         auto playgroundClientScriptAPI = cast<CGamePlaygroundClientScriptAPI>(app.Network.PlaygroundClientScriptAPI);
-                        if (playgroundClientScriptAPI != null) {
+                        if (@playgroundClientScriptAPI != null) {
                             g_dojo.currentRaceTime = playgroundClientScriptAPI.GameTime - player.ScriptAPI.StartTime;
                         }
                     }
@@ -188,9 +188,9 @@ class TMDojo
 
                 CGamePlayground@ GamePlayground = cast<CGamePlayground>(app.CurrentPlayground);
                 if (PlaygroundScript !is null && GamePlayground.GameTerminals.get_Length() > 0) {
-                    CSmPlayer@ player = cast<CSmPlayer>(GamePlayground.GameTerminals[0].ControlledPlayer);
-                    if (GamePlayground.GameTerminals[0].UISequence_Current == CGameTerminal::ESGamePlaygroundUIConfig__EUISequence::Finish && player !is null) {
-                        auto ghost = PlaygroundScript.Ghost_RetrieveFromPlayer(player.ScriptAPI);
+                    CSmPlayer@ cmsPlayer = cast<CSmPlayer>(GamePlayground.GameTerminals[0].ControlledPlayer);
+                    if (GamePlayground.GameTerminals[0].UISequence_Current == CGameTerminal::ESGamePlaygroundUIConfig__EUISequence::Finish && cmsPlayer !is null) {
+                        auto ghost = PlaygroundScript.Ghost_RetrieveFromPlayer(cmsPlayer.ScriptAPI);
                         if (ghost !is null) {
                             if (ghost.Result.Time > 0 && ghost.Result.Time < 4294967295) endRaceTimeAccurate = ghost.Result.Time;
                             PlaygroundScript.DataFileMgr.Ghost_Release(ghost.Id);

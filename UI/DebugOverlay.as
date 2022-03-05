@@ -15,8 +15,8 @@ void renderDebugOverlay() {
     auto app = GetApp();
 
     auto sceneVis = app.GameScene;
-    if (sceneVis != null && app.Editor == null) {
-        if (app.CurrentPlayground != null && app.CurrentPlayground.GameTerminals.get_Length() > 0 && app.CurrentPlayground.GameTerminals[0].GUIPlayer != null) {
+    if (@sceneVis != null && @app.Editor == null) {
+        if (@app.CurrentPlayground != null && app.CurrentPlayground.GameTerminals.get_Length() > 0 && @app.CurrentPlayground.GameTerminals[0].GUIPlayer != null) {
             auto player = Player::GetViewingPlayer();
             if (player !is null && player.User.Name.Contains(g_dojo.network.PlayerInfo.Name)) {
                 @vis = Vehicle::GetVis(sceneVis, player);
@@ -24,7 +24,7 @@ void renderDebugOverlay() {
         }
     }
 
-    if (vis != null) {
+    if (@vis != null) {
         UI::NextColumn();
 
         UI::Text("Position.x: " + vis.AsyncState.Position.x);
