@@ -38,7 +38,7 @@ class TMDojo
         startnew(Api::checkServer);
     }
 
-    void FillBuffer(CSceneVehicleVisState@ vis, CSmScriptPlayer@ sm_script) {
+    void FillBuffer(CSceneVehicleVisState@ vis) {
         int gazAndBrake = 0;
         int gazPedal = vis.InputGasPedal > 0 ? 1 : 0;
         int isBraking = vis.InputBrakePedal > 0 ? 2 : 0;
@@ -108,11 +108,12 @@ class TMDojo
             return;
         }
 
-        CSmScriptPlayer@ sm_script = cast<CSmPlayer>(app.CurrentPlayground.GameTerminals[0].GUIPlayer).ScriptAPI;
+        CSmPlayer@ smPlayer = cast<CSmPlayer>(app.CurrentPlayground.GameTerminals[0].GUIPlayer);
+        CSmScriptPlayer@ smScript = cast<CSmScriptPlayer>(smPlayer.ScriptAPI);
         CGamePlaygroundUIConfig@ uiConfig = app.CurrentPlayground.UIConfigs[0];
         CGameCtnChallenge@ rootMap = app.RootMap;
 
-        if (@sm_script == null) {
+        if (@smScript == null) {
             return;
         }
 
@@ -148,14 +149,14 @@ class TMDojo
                     if (@app.Network.PlaygroundClientScriptAPI != null) {
                         auto playgroundClientScriptAPI = cast<CGamePlaygroundClientScriptAPI>(app.Network.PlaygroundClientScriptAPI);
                         if (@playgroundClientScriptAPI != null) {
-                            g_dojo.currentRaceTime = playgroundClientScriptAPI.GameTime - player.ScriptAPI.StartTime;
+                            g_dojo.currentRaceTime = playgroundClientScriptAPI.GameTime - smScript.StartTime;
                         }
                     }
                 } else {
-                    g_dojo.currentRaceTime = playgroundScript.Now - player.ScriptAPI.StartTime;
+                    g_dojo.currentRaceTime = playgroundScript.Now - smScript.StartTime;
                 }
             } else {
-                g_dojo.currentRaceTime = sm_script.CurrentRaceTime;
+                g_dojo.currentRaceTime = smScript.CurrentRaceTime;
             }
         }
 
@@ -177,7 +178,7 @@ class TMDojo
                 cast<FinishHandle>(fh).finished = true;
                 @cast<FinishHandle>(fh).rootMap = rootMap;
                 @cast<FinishHandle>(fh).uiConfig = uiConfig;
-                @cast<FinishHandle>(fh).sm_script = sm_script;
+                @cast<FinishHandle>(fh).smScript = smScript;
                 @cast<FinishHandle>(fh).network = network;
                 cast<FinishHandle>(fh).endRaceTime = latestRecordedTime;
 
@@ -189,9 +190,8 @@ class TMDojo
 
                 CGamePlayground@ GamePlayground = cast<CGamePlayground>(app.CurrentPlayground);
                 if (PlaygroundScript !is null && GamePlayground.GameTerminals.get_Length() > 0) {
-                    CSmPlayer@ cmsPlayer = cast<CSmPlayer>(GamePlayground.GameTerminals[0].ControlledPlayer);
-                    if (GamePlayground.GameTerminals[0].UISequence_Current == CGameTerminal::ESGamePlaygroundUIConfig__EUISequence::Finish && cmsPlayer !is null) {
-                        auto ghost = PlaygroundScript.Ghost_RetrieveFromPlayer(cmsPlayer.ScriptAPI);
+                    if (GamePlayground.GameTerminals[0].UISequence_Current == CGameTerminal::ESGamePlaygroundUIConfig__EUISequence::Finish && smScript !is null) {
+                        auto ghost = PlaygroundScript.Ghost_RetrieveFromPlayer(smScript);
                         if (ghost !is null) {
                             if (ghost.Result.Time > 0 && ghost.Result.Time < 4294967295) endRaceTimeAccurate = ghost.Result.Time;
                             PlaygroundScript.DataFileMgr.Ghost_Release(ghost.Id);
@@ -212,7 +212,7 @@ class TMDojo
                 cast<FinishHandle>(fh).finished = false;
                 @cast<FinishHandle>(fh).rootMap = rootMap;
                 @cast<FinishHandle>(fh).uiConfig = uiConfig;
-                @cast<FinishHandle>(fh).sm_script = sm_script;
+                @cast<FinishHandle>(fh).smScript = smScript;
                 @cast<FinishHandle>(fh).network = network;
                 cast<FinishHandle>(fh).endRaceTime = latestRecordedTime;
                 startnew(Api::PostRecordedData, fh);
@@ -221,20 +221,20 @@ class TMDojo
                 int timeSinceLastRecord = g_dojo.currentRaceTime - latestRecordedTime;
                 if (timeSinceLastRecord > (1.0 / RECORDING_FPS) * 1000) {
                     // Keep track of the amount of samples for which the position did not changed, used to pause recording
-                    if (Math::Abs(latestPlayerPosition.x - sm_script.Position.x) < 0.001 &&
-                        Math::Abs(latestPlayerPosition.y - sm_script.Position.y) < 0.001 && 
-                        Math::Abs(latestPlayerPosition.z - sm_script.Position.z) < 0.001 ) {
+                    if (Math::Abs(latestPlayerPosition.x - smScript.Position.x) < 0.001 &&
+                        Math::Abs(latestPlayerPosition.y - smScript.Position.y) < 0.001 && 
+                        Math::Abs(latestPlayerPosition.z - smScript.Position.z) < 0.001 ) {
                         numSamePositions += 1;
                     } else {
                         numSamePositions = 0;
                     }
                     // Fill buffer if player has moved recently
                     if (numSamePositions < RECORDING_FPS) {
-                        FillBuffer(vis, sm_script);
+                        FillBuffer(vis);
                         latestRecordedTime = g_dojo.currentRaceTime;
                     }
 
-                    latestPlayerPosition = sm_script.Position;
+                    latestPlayerPosition = smScript.Position;
                 }
             }
         }

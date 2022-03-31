@@ -1,7 +1,7 @@
 class FinishHandle
 {
     bool finished;
-    CSmScriptPlayer@ sm_script;
+    CSmScriptPlayer@ smScript;
     CGamePlaygroundUIConfig@ uiConfig;
     CGameCtnChallenge@ rootMap;
     CTrackManiaNetwork@ network;

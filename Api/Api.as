@@ -104,7 +104,7 @@ namespace Api {
 
         FinishHandle @fh = cast<FinishHandle>(handle);
         bool finished = fh.finished;
-        CSmScriptPlayer@ sm_script = fh.sm_script;
+        CSmScriptPlayer@ smScript = fh.smScript;
         CGamePlaygroundUIConfig@ uiConfig = fh.uiConfig;
         CGameCtnChallenge@ rootMap = fh.rootMap;
         CTrackManiaNetwork@ network = fh.network;
