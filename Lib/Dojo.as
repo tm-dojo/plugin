@@ -142,7 +142,7 @@ class TMDojo
         bool hudOff = false;
 
         if (app.CurrentPlayground !is null && app.CurrentPlayground.Interface !is null) {
-            if (Dev::GetOffsetUint32(app.CurrentPlayground.Interface, 0x1C) == 0) {
+            if (!UI::IsGameUIVisible()) {
                 hudOff = true;
                 if (@playgroundScript == null) {
                     if (@app.Network.PlaygroundClientScriptAPI != null) {
