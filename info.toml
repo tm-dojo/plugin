@@ -1,21 +1,10 @@
 [meta]
-name     = "TMDojo"
-author   = "TMDojo"
+name = "TMDojo"
+author = "TeamDojo"
 category = "Utilities"
-perms    = "full"
-
-imports = [
-    "Constants.as",
-    "Settings.as",
-    "Player.as",
-    "DebugOverlay.as",
-    "Dojo.as",
-    "Menu.as",
-    "RecordingOverlay.as",
-    "Api.as",
-    "FinishHandle.as",
-    "AuthWindow.as"
-]
+version = "0.0.1"
+siteid = 180
 
 [script]
 dependencies = [ "VehicleState" ]
+
