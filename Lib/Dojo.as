@@ -97,6 +97,11 @@ class TMDojo
 
     void Render()
 	{
+        // Do not start recording if the user is not authenticated or doesn't even have a SessionId
+        if (!pluginAuthed || SessionId == "") {
+            return;
+        }
+
 		auto app = GetApp();
 
 		auto sceneVis = app.GameScene;
