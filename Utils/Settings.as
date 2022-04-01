@@ -13,7 +13,7 @@ string ApiUrl = REMOTE_API;
 [Setting name="TMDojoUiUrl" description="TMDojo Ui Url"]
 string UiUrl = REMOTE_UI;
 
-[Setting name="TMDojoClientCode" description="TMDojo plugin Client Code"]
+[Setting password name="TMDojoClientCode" description="TMDojo plugin Client Code"]
 string ClientCode = "";
 
 [Setting password name="TMDojoSessionId" description="TMDojo plugin SessionId"]
