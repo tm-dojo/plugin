@@ -11,7 +11,7 @@ void RenderMenu()
 		if (UI::MenuItem(Enabled ? "Turn OFF" : "Turn ON", "", false, true)) {
             Enabled = !Enabled;
             if (Enabled) {
-                startnew(Api::checkServer);
+                startnew(Api::checkServerWaitForValidWebId);
             }
 		}
 
@@ -20,7 +20,7 @@ void RenderMenu()
         if (DevMode && UI::MenuItem("Switch to " + otherApi + " " + otherUi , "", false, true)) {
             ApiUrl = otherApi;
             UiUrl = otherUi;
-            startnew(Api::checkServer);
+            startnew(Api::checkServerWaitForValidWebId);
 		}
 
         if (UI::MenuItem(OverlayEnabled ? "[X]  Overlay" : "[  ]  Overlay", "", false, true)) {
@@ -37,7 +37,7 @@ void RenderMenu()
 
         if (!g_dojo.serverAvailable && !g_dojo.checkingServer) {
             if (UI::MenuItem("Check server", "", false, true)) {
-                startnew(Api::checkServer);
+                startnew(Api::checkServerWaitForValidWebId);
             }
         }
 

@@ -35,7 +35,7 @@ class TMDojo
     TMDojo() {
         auto app = GetApp();
         @network = cast<CTrackManiaNetwork>(app.Network);
-        startnew(Api::checkServer);
+        startnew(Api::CheckServerWaitForValidWebId);
     }
 
     void FillBuffer(CSceneVehicleVisState@ vis) {

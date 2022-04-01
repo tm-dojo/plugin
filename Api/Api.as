@@ -1,9 +1,21 @@
 namespace Api {
+    
+    // Workaround method for checkServer to ensure checkServer is only called when webId and playerLogin are not the equal
+    void checkServerWaitForValidWebId() {
+        while (g_dojo.network.PlayerInfo.Login == g_dojo.network.PlayerInfo.WebServicesUserId) {
+            sleep(50);
+            yield();
+        }
+
+        startnew(Api::checkServer);
+    }
+
     void checkServer() {
         g_dojo.checkingServer = true;
         g_dojo.playerName = g_dojo.network.PlayerInfo.Name;
         g_dojo.playerLogin = g_dojo.network.PlayerInfo.Login;
         g_dojo.webId = g_dojo.network.PlayerInfo.WebServicesUserId;
+
         Net::HttpRequest@ auth = Net::HttpGet(ApiUrl + "/auth?name=" + g_dojo.playerName + "&login=" + g_dojo.playerLogin + "&webid=" + g_dojo.webId + "&sessionId=" + SessionId);
         while (!auth.Finished()) {
             yield();
@@ -21,7 +33,7 @@ namespace Api {
                         g_dojo.pluginAuthUrl = json["authURL"];
                         ClientCode = json["clientCode"];
                         SessionId = "";
-                        UI::ShowNotification("TMDojo", "Plugin needs authentication!");
+                        UI::ShowNotification("TMDojo", "Plugin needs authentication!\n\nF3 → Scripts → TMDojo → Authenticate Plugin", 10000);
                     } catch {
                         error("checkServer json error");
                     }
@@ -54,7 +66,7 @@ namespace Api {
             UI::ShowNotification("TMDojo", "Plugin logged out!", SUCCESS_COLOR);
             SessionId = "";
             g_dojo.pluginAuthed = false;
-            checkServer();
+            startnew(Api::checkServerWaitForValidWebId);
         } else {
             UI::ShowNotification("TMDojo", "Failed to logout, please try again!", ERROR_COLOR);
         }
