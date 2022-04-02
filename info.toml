@@ -2,7 +2,7 @@
 name = "TMDojo"
 author = "TeamDojo"
 category = "Utilities"
-version = "0.0.1"
+version = "0.2.0"
 siteid = 180
 
 [script]
