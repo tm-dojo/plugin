@@ -220,6 +220,7 @@ class TMDojo
                 @cast<FinishHandle>(fh).smScript = smScript;
                 @cast<FinishHandle>(fh).network = network;
                 cast<FinishHandle>(fh).endRaceTime = latestRecordedTime;
+                
                 startnew(Api::PostRecordedData, fh);
             } else {
                  // Record current data

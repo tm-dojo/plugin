@@ -106,14 +106,37 @@ namespace Api {
     }
 
     void PostRecordedData(ref @handle) {
-        g_dojo.recording = false;
 
-        if (!g_dojo.serverAvailable || !Enabled) {
-            g_dojo.latestRecordedTime = -6666;
-            g_dojo.membuff.Resize(0);
+        // Copy databuffer so TMDojo can keep recording with a clean state
+        g_dojo.membuff.Seek(0);
+        string dataBase64 = g_dojo.membuff.ReadToBase64(g_dojo.membuff.GetSize());
+        uint64 bufferSize = g_dojo.membuff.GetSize();
+
+        // Reset recording state, all data required to upload is available without the need of TMDojo instance
+        g_dojo.recording = false;
+        g_dojo.latestRecordedTime = -6666;
+        g_dojo.currentRaceTime = -6666;
+        g_dojo.membuff.Resize(0);
+
+        // Abort if server isn't available
+        if (!g_dojo.serverAvailable) {
+            print("[TMDojo]: Abort upload, server not available");
             return;
         }
 
+        // Abort if plugin is disabled
+        if (!Enabled) {
+            print("[TMDojo]: Abort upload, plugin disabled");
+            return;
+        } 
+        
+        // Abort save if buffer is too small
+        if (bufferSize < 10000) {
+            print("[TMDojo]: Not saving file, too little data");
+            return;
+        }
+       
+        // Setup variables for upload
         FinishHandle @fh = cast<FinishHandle>(handle);
         bool finished = fh.finished;
         CSmScriptPlayer@ smScript = fh.smScript;
@@ -122,17 +145,10 @@ namespace Api {
         CTrackManiaNetwork@ network = fh.network;
         int endRaceTime = fh.endRaceTime;
 
-        if (g_dojo.membuff.GetSize() < 10000) {
-            print("[TMDojo]: Not saving file, too little data");
-            g_dojo.membuff.Resize(0);
-            g_dojo.latestRecordedTime = -6666;
-            g_dojo.currentRaceTime = -6666;
-            g_dojo.recording = false;
-            return;
-        }
         if (!OnlySaveFinished || finished) {
-            print("[TMDojo]: Saving game data (size: " + g_dojo.membuff.GetSize() / 1024 + " kB)");
-            g_dojo.membuff.Seek(0);
+            print("[TMDojo]: Saving game data (size: " + bufferSize / 1024 + " kB)");
+
+            // Setup request URL
             string mapNameClean = Regex::Replace(rootMap.MapInfo.NameForUi, "\\$([0-9a-fA-F]{1,3}|[iIoOnNmMwWsSzZtTgG<>]|[lLhHpP](\\[[^\\]]+\\])?)", "").Replace(" ", "%20");
             string reqUrl = ApiUrl + "/replays" +
                                 "?mapName=" + Net::UrlEncode(mapNameClean) +
@@ -143,15 +159,22 @@ namespace Api {
                                 "&webId=" + network.PlayerInfo.WebServicesUserId +
                                 "&endRaceTime=" + endRaceTime +
                                 "&raceFinished=" + (finished ? "1" : "0");
-            // build up request instance
+
+            // Build request instance
             Net::HttpRequest req;
             req.Method = Net::HttpMethod::Post;
             req.Url = reqUrl;
-            req.Body = g_dojo.membuff.ReadToBase64(g_dojo.membuff.GetSize());
+
+            // Set body to base64 encoded memory buffer
+            req.Body = dataBase64;
+
+            // Build headers
             dictionary@ Headers = dictionary();
             Headers["Authorization"] = "dojo " + SessionId;
             Headers["Content-Type"] = "application/octet-stream";
             @req.Headers = Headers;
+
+            // Start and wait until request is finished
             req.Start();
             while (!req.Finished()) {
                 yield();
@@ -167,9 +190,5 @@ namespace Api {
                 UI::ShowNotification("TMDojo", "Uploaded replay successfully!", SUCCESS_COLOR);
             }
         }
-        g_dojo.recording = false;
-        g_dojo.latestRecordedTime = -6666;
-        g_dojo.currentRaceTime = -6666;
-        g_dojo.membuff.Resize(0);
     }
 }
