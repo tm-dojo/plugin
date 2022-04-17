@@ -26,6 +26,10 @@ class TMDojo
     int checkSessionIdCount = 0;
     int maxCheckSessionId = 60;
 
+    // Plugin info
+    Meta::Plugin@ plugin = Meta::ExecutingPlugin();
+    string version = plugin.Version;
+
     string pluginAuthUrl = "";
 
     bool pluginAuthed = false;

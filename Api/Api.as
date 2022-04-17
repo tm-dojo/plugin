@@ -16,7 +16,7 @@ namespace Api {
         g_dojo.playerLogin = g_dojo.network.PlayerInfo.Login;
         g_dojo.webId = g_dojo.network.PlayerInfo.WebServicesUserId;
 
-        Net::HttpRequest@ auth = Net::HttpGet(ApiUrl + "/auth?name=" + g_dojo.playerName + "&login=" + g_dojo.playerLogin + "&webid=" + g_dojo.webId + "&sessionId=" + SessionId);
+        Net::HttpRequest@ auth = Net::HttpGet(ApiUrl + "/auth?name=" + g_dojo.playerName + "&login=" + g_dojo.playerLogin + "&webid=" + g_dojo.webId + "&sessionId=" + SessionId + "&pluginVersion=" + g_dojo.version);
         while (!auth.Finished()) {
             yield();
             sleep(50);
@@ -55,7 +55,7 @@ namespace Api {
 
     void logout() {
         string logoutBody = "{\"sessionId\":\"" + SessionId + "\"}";
-        Net::HttpRequest@ req = Net::HttpPost(ApiUrl + "/logout", logoutBody, "application/json");
+        Net::HttpRequest@ req = Net::HttpPost(ApiUrl + "/logout?pluginVersion=" + g_dojo.version, logoutBody, "application/json");
         while (!req.Finished()) {
             yield();
             sleep(50);
@@ -82,7 +82,7 @@ namespace Api {
         while (g_dojo.checkSessionIdCount < MAX_CHECK_SESSION_ID) {
             sleep(1000);
             g_dojo.checkSessionIdCount++;
-            Net::HttpRequest@ auth = Net::HttpGet(ApiUrl + "/auth/pluginSecret?clientCode=" + ClientCode);
+            Net::HttpRequest@ auth = Net::HttpGet(ApiUrl + "/auth/pluginSecret?clientCode=" + ClientCode+ "&pluginVersion=" + g_dojo.version);
             while (!auth.Finished()) {
                 yield();
                 sleep(50);
@@ -92,6 +92,7 @@ namespace Api {
                 SessionId = json["sessionId"];
                 UI::ShowNotification("TMDojo", "Plugin is authenticated!", SUCCESS_COLOR, 10000);
                 g_dojo.pluginAuthed = true;
+                g_dojo.checkSessionIdCount = 0;
                 ClientCode = "";
                 break;
             } catch {
@@ -158,7 +159,8 @@ namespace Api {
                                 "&playerLogin=" + network.PlayerInfo.Login +
                                 "&webId=" + network.PlayerInfo.WebServicesUserId +
                                 "&endRaceTime=" + endRaceTime +
-                                "&raceFinished=" + (finished ? "1" : "0");
+                                "&raceFinished=" + (finished ? "1" : "0") +
+                                "&pluginVersion=" + g_dojo.version;
 
             // Build request instance
             Net::HttpRequest req;
