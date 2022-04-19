@@ -2,7 +2,7 @@ TMDojo@ g_dojo;
 
 void Main() {
     @g_dojo = TMDojo();
-    print("TMDojo Init");
+    print("TMDojo v" + g_dojo.version + " Init ");
 }
 
 void Render() {
