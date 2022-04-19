@@ -106,6 +106,19 @@ namespace Api {
         }
     }
 
+    // Parse list of uint values as a string joined by a comma delimiter
+    // [1,2,3,4,5] -> "1,2,3,4,5"
+    string SectorTimesToString(array<uint> times) {
+        string result = "";
+        for (uint i = 0; i < times.Length; i++) {
+            result += times[i] + "";
+            if (i < times.Length - 1) {
+                result += ",";
+            }
+        }
+        return result;
+    }
+
     void PostRecordedData(ref @handle) {
 
         // Copy databuffer so TMDojo can keep recording with a clean state
@@ -118,6 +131,7 @@ namespace Api {
         g_dojo.latestRecordedTime = -6666;
         g_dojo.currentRaceTime = -6666;
         g_dojo.membuff.Resize(0);
+        g_dojo.sectorTimes.Resize(0);
 
         // Abort if server isn't available
         if (!g_dojo.serverAvailable) {
@@ -145,6 +159,7 @@ namespace Api {
         CGameCtnChallenge@ rootMap = fh.rootMap;
         CTrackManiaNetwork@ network = fh.network;
         int endRaceTime = fh.endRaceTime;
+        array<uint> sectorTimes = fh.sectorTimes;
 
         if (!OnlySaveFinished || finished) {
             print("[TMDojo]: Saving game data (size: " + bufferSize / 1024 + " kB)");
@@ -160,7 +175,8 @@ namespace Api {
                                 "&webId=" + network.PlayerInfo.WebServicesUserId +
                                 "&endRaceTime=" + endRaceTime +
                                 "&raceFinished=" + (finished ? "1" : "0") +
-                                "&pluginVersion=" + g_dojo.version;
+                                "&pluginVersion=" + g_dojo.version +
+                                "&sectorTimes=" + SectorTimesToString(sectorTimes);
 
             // Build request instance
             Net::HttpRequest req;

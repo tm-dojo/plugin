@@ -8,6 +8,7 @@ class TMDojo
     int latestRecordedTime = -6666;
     CTrackManiaNetwork@ network;
 
+    array<uint> sectorTimes;
 
     // Player info
     string playerName;
@@ -106,6 +107,17 @@ class TMDojo
             return;
         }
 
+        // Track CP times
+        PlayerState::sTMData@ TMData = PlayerState::GetRaceData();
+        if(TMData.dEventInfo.CheckpointChange && 
+            TMData.dPlayerInfo.NumberOfCheckpointsPassed < (TMData.dMapInfo.NumberOfCheckpoints + 1)) {
+            sectorTimes.InsertLast(TMData.dPlayerInfo.LatestCPTime);
+        }
+        if(TMData.dEventInfo.PlayerStateChange && TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Countdown) {
+            sectorTimes.Resize(0);
+        }
+
+
 		auto app = GetApp();
 
 		auto sceneVis = app.GameScene;
@@ -190,6 +202,7 @@ class TMDojo
                 @cast<FinishHandle>(fh).smScript = smScript;
                 @cast<FinishHandle>(fh).network = network;
                 cast<FinishHandle>(fh).endRaceTime = latestRecordedTime;
+                cast<FinishHandle>(fh).sectorTimes = sectorTimes;
 
                 // https://github.com/GreepTheSheep/openplanet-mx-random special thanks to greep for getting accurate endRaceTime
 
@@ -224,6 +237,7 @@ class TMDojo
                 @cast<FinishHandle>(fh).smScript = smScript;
                 @cast<FinishHandle>(fh).network = network;
                 cast<FinishHandle>(fh).endRaceTime = latestRecordedTime;
+                cast<FinishHandle>(fh).sectorTimes = sectorTimes;
                 
                 startnew(Api::PostRecordedData, fh);
             } else {
