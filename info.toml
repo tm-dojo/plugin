@@ -6,4 +6,5 @@ version = "0.3.0"
 siteid = 180
 
 [script]
-dependencies = [ "VehicleState", "PlayerState" ]
+dependencies = [ "VehicleState" ]
+optional_dependencies = [ "PlayerState" ]

@@ -106,7 +106,8 @@ class TMDojo
         if (!pluginAuthed || SessionId == "") {
             return;
         }
-
+        
+#if DEPENDENCY_PLAYERSTATE
         // Track CP times
         PlayerState::sTMData@ TMData = PlayerState::GetRaceData();
         if(TMData.dEventInfo.CheckpointChange && 
@@ -116,6 +117,7 @@ class TMDojo
         if(TMData.dEventInfo.PlayerStateChange && TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Countdown) {
             sectorTimes.Resize(0);
         }
+#endif
 
 
 		auto app = GetApp();

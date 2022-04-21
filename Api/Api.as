@@ -175,8 +175,12 @@ namespace Api {
                                 "&webId=" + network.PlayerInfo.WebServicesUserId +
                                 "&endRaceTime=" + endRaceTime +
                                 "&raceFinished=" + (finished ? "1" : "0") +
-                                "&pluginVersion=" + g_dojo.version +
-                                "&sectorTimes=" + SectorTimesToString(sectorTimes);
+                                "&pluginVersion=" + g_dojo.version;
+            
+            // If sector times are available, add them to the request URL
+            if (sectorTimes.Length > 0) {
+                reqUrl += "&sectorTimes=" + SectorTimesToString(sectorTimes);
+            }
 
             // Build request instance
             Net::HttpRequest req;
