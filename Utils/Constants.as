@@ -13,4 +13,5 @@ string GREEN = "\\$9f3";
 string ORANGE = "\\$fb3";
 
 vec4 SUCCESS_COLOR = vec4(0, 0.4, 0, 1);
+vec4 WARNING_COLOR = vec4(0.5, 0.4, 0, 1);
 vec4 ERROR_COLOR = vec4(0.4, 0, 0, 1);

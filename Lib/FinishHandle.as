@@ -6,4 +6,5 @@ class FinishHandle
     CGameCtnChallenge@ rootMap;
     CTrackManiaNetwork@ network;
     int endRaceTime;
+    array<uint> sectorTimes;
 }

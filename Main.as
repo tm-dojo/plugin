@@ -9,6 +9,8 @@ void Render() {
     if (g_dojo !is null && Enabled) {
 		g_dojo.Render();
 	}
+
+    DependencyNotifier::NotifyMissingPlayerStateDependency();
 }
 
 void RenderInterface() {
