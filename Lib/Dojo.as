@@ -163,10 +163,10 @@ class TMDojo
 
         auto playgroundScript = cast<CSmArenaRulesMode>(app.PlaygroundScript);
 
-        bool hudOff = false;
+        bool hudOff = !UI::IsGameUIVisible();
 
         if (app.CurrentPlayground !is null && app.CurrentPlayground.Interface !is null) {
-            if (!UI::IsGameUIVisible() || playgroundScript == null) {
+            if (hudOff || playgroundScript == null) {
                 if (@app.Network.PlaygroundClientScriptAPI != null) {
                     auto playgroundClientScriptAPI = cast<CGamePlaygroundClientScriptAPI>(app.Network.PlaygroundClientScriptAPI);
                     if (@playgroundClientScriptAPI != null) {
