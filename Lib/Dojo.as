@@ -163,20 +163,15 @@ class TMDojo
 
         auto playgroundScript = cast<CSmArenaRulesMode>(app.PlaygroundScript);
 
-        bool hudOff = false;
+        bool hudOff = !UI::IsGameUIVisible();
 
         if (app.CurrentPlayground !is null && app.CurrentPlayground.Interface !is null) {
-            if (!UI::IsGameUIVisible()) {
-                hudOff = true;
-                if (@playgroundScript == null) {
-                    if (@app.Network.PlaygroundClientScriptAPI != null) {
-                        auto playgroundClientScriptAPI = cast<CGamePlaygroundClientScriptAPI>(app.Network.PlaygroundClientScriptAPI);
-                        if (@playgroundClientScriptAPI != null) {
-                            g_dojo.currentRaceTime = playgroundClientScriptAPI.GameTime - smScript.StartTime;
-                        }
+            if (hudOff || playgroundScript == null) {
+                if (@app.Network.PlaygroundClientScriptAPI != null) {
+                    auto playgroundClientScriptAPI = cast<CGamePlaygroundClientScriptAPI>(app.Network.PlaygroundClientScriptAPI);
+                    if (@playgroundClientScriptAPI != null) {
+                        g_dojo.currentRaceTime = playgroundClientScriptAPI.GameTime - smScript.StartTime;
                     }
-                } else {
-                    g_dojo.currentRaceTime = playgroundScript.Now - smScript.StartTime;
                 }
             } else {
                 g_dojo.currentRaceTime = smScript.CurrentRaceTime;
