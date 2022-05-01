@@ -5,7 +5,7 @@ void Main() {
     print("TMDojo v" + g_dojo.version + " Init ");
 }
 
-void Render() {
+void Update(float dt) {
     if (g_dojo !is null && Enabled) {
 		g_dojo.Render();
 	}
