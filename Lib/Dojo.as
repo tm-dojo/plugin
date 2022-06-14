@@ -227,6 +227,8 @@ class TMDojo
                 // Give up
                 print("[TMDojo]: Give up");
 
+                Api::Reset();
+                /*
                 ref @fh = FinishHandle();
                 cast<FinishHandle>(fh).finished = false;
                 @cast<FinishHandle>(fh).rootMap = rootMap;
@@ -237,6 +239,7 @@ class TMDojo
                 cast<FinishHandle>(fh).sectorTimes = sectorTimes;
                 
                 startnew(Api::PostRecordedData, fh);
+                */
             } else {
                  // Record current data
                 int timeSinceLastRecord = g_dojo.currentRaceTime - latestRecordedTime;
