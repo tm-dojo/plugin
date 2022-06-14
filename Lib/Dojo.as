@@ -111,7 +111,7 @@ class TMDojo
         // Track CP times
         PlayerState::sTMData@ TMData = PlayerState::GetRaceData();
         if(TMData.dEventInfo.CheckpointChange && 
-            TMData.dPlayerInfo.NumberOfCheckpointsPassed < (TMData.dMapInfo.NumberOfCheckpoints + 1)) {
+            TMData.dPlayerInfo.NumberOfCheckpointsPassed < uint(TMData.dMapInfo.NumberOfCheckpoints + 1)) {
             sectorTimes.InsertLast(TMData.dPlayerInfo.LatestCPTime);
         }
         if(TMData.dEventInfo.PlayerStateChange && TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Countdown) {
@@ -166,7 +166,7 @@ class TMDojo
         bool hudOff = !UI::IsGameUIVisible();
 
         if (app.CurrentPlayground !is null && app.CurrentPlayground.Interface !is null) {
-            if (hudOff || playgroundScript == null) {
+            if (hudOff || @playgroundScript == null) {
                 if (@app.Network.PlaygroundClientScriptAPI != null) {
                     auto playgroundClientScriptAPI = cast<CGamePlaygroundClientScriptAPI>(app.Network.PlaygroundClientScriptAPI);
                     if (@playgroundClientScriptAPI != null) {
