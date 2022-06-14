@@ -209,7 +209,7 @@ class TMDojo
 
                 CGamePlayground@ GamePlayground = cast<CGamePlayground>(app.CurrentPlayground);
                 if (PlaygroundScript !is null && GamePlayground.GameTerminals.get_Length() > 0) {
-                    if (GamePlayground.GameTerminals[0].UISequence_Current == CGameTerminal::ESGamePlaygroundUIConfig__EUISequence::Finish && smScript !is null) {
+                    if (GamePlayground.GameTerminals[0].UISequence_Current == SGamePlaygroundUIConfig::EUISequence::Finish && smScript !is null) {
                         auto ghost = PlaygroundScript.Ghost_RetrieveFromPlayer(smScript);
                         if (ghost !is null) {
                             if (ghost.Result.Time > 0 && ghost.Result.Time < 4294967295) endRaceTimeAccurate = ghost.Result.Time;
