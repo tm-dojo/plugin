@@ -119,15 +119,6 @@ namespace Api {
         return result;
     }
 
-    void Reset() {
-        // Reset recording state, all data required to upload is available without the need of TMDojo instance
-        g_dojo.recording = false;
-        g_dojo.latestRecordedTime = -6666;
-        g_dojo.currentRaceTime = -6666;
-        g_dojo.membuff.Resize(0);
-        g_dojo.sectorTimes.Resize(0);
-    }
-
     void PostRecordedData(ref @handle) {
 
         // Copy databuffer so TMDojo can keep recording with a clean state
@@ -135,7 +126,7 @@ namespace Api {
         string dataBase64 = g_dojo.membuff.ReadToBase64(g_dojo.membuff.GetSize());
         uint64 bufferSize = g_dojo.membuff.GetSize();
 
-        Reset();
+        g_dojo.Reset();
 
         // Abort if server isn't available
         if (!g_dojo.serverAvailable) {

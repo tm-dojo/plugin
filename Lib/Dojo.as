@@ -43,6 +43,15 @@ class TMDojo
         startnew(Api::checkServerWaitForValidWebId);
     }
 
+    void Reset() {
+        // Reset recording state, all data required to upload is available without the need of TMDojo instance
+        g_dojo.recording = false;
+        g_dojo.latestRecordedTime = -6666;
+        g_dojo.currentRaceTime = -6666;
+        g_dojo.membuff.Resize(0);
+        g_dojo.sectorTimes.Resize(0);
+    }
+
     void FillBuffer(CSceneVehicleVisState@ vis) {
         int gazAndBrake = 0;
         int gazPedal = vis.InputGasPedal > 0 ? 1 : 0;
@@ -227,7 +236,8 @@ class TMDojo
                 // Give up
                 print("[TMDojo]: Give up");
 
-                Api::Reset();
+                g_dojo.Reset();
+
                 /*
                 ref @fh = FinishHandle();
                 cast<FinishHandle>(fh).finished = false;
