@@ -43,6 +43,15 @@ class TMDojo
         startnew(Api::checkServerWaitForValidWebId);
     }
 
+    void Reset() {
+        // Reset recording state, all data required to upload is available without the need of TMDojo instance
+        g_dojo.recording = false;
+        g_dojo.latestRecordedTime = -6666;
+        g_dojo.currentRaceTime = -6666;
+        g_dojo.membuff.Resize(0);
+        g_dojo.sectorTimes.Resize(0);
+    }
+
     void FillBuffer(CSceneVehicleVisState@ vis) {
         int gazAndBrake = 0;
         int gazPedal = vis.InputGasPedal > 0 ? 1 : 0;
@@ -111,7 +120,7 @@ class TMDojo
         // Track CP times
         PlayerState::sTMData@ TMData = PlayerState::GetRaceData();
         if(TMData.dEventInfo.CheckpointChange && 
-            TMData.dPlayerInfo.NumberOfCheckpointsPassed < (TMData.dMapInfo.NumberOfCheckpoints + 1)) {
+            TMData.dPlayerInfo.NumberOfCheckpointsPassed < uint(TMData.dMapInfo.NumberOfCheckpoints + 1)) {
             sectorTimes.InsertLast(TMData.dPlayerInfo.LatestCPTime);
         }
         if(TMData.dEventInfo.PlayerStateChange && TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Countdown) {
@@ -166,7 +175,7 @@ class TMDojo
         bool hudOff = !UI::IsGameUIVisible();
 
         if (app.CurrentPlayground !is null && app.CurrentPlayground.Interface !is null) {
-            if (hudOff || playgroundScript == null) {
+            if (hudOff || @playgroundScript == null) {
                 if (@app.Network.PlaygroundClientScriptAPI != null) {
                     auto playgroundClientScriptAPI = cast<CGamePlaygroundClientScriptAPI>(app.Network.PlaygroundClientScriptAPI);
                     if (@playgroundClientScriptAPI != null) {
@@ -209,7 +218,7 @@ class TMDojo
 
                 CGamePlayground@ GamePlayground = cast<CGamePlayground>(app.CurrentPlayground);
                 if (PlaygroundScript !is null && GamePlayground.GameTerminals.get_Length() > 0) {
-                    if (GamePlayground.GameTerminals[0].UISequence_Current == CGameTerminal::ESGamePlaygroundUIConfig__EUISequence::Finish && smScript !is null) {
+                    if (GamePlayground.GameTerminals[0].UISequence_Current == SGamePlaygroundUIConfig::EUISequence::Finish && smScript !is null) {
                         auto ghost = PlaygroundScript.Ghost_RetrieveFromPlayer(smScript);
                         if (ghost !is null) {
                             if (ghost.Result.Time > 0 && ghost.Result.Time < 4294967295) endRaceTimeAccurate = ghost.Result.Time;
@@ -227,6 +236,9 @@ class TMDojo
                 // Give up
                 print("[TMDojo]: Give up");
 
+                g_dojo.Reset();
+
+                /*
                 ref @fh = FinishHandle();
                 cast<FinishHandle>(fh).finished = false;
                 @cast<FinishHandle>(fh).rootMap = rootMap;
@@ -237,6 +249,7 @@ class TMDojo
                 cast<FinishHandle>(fh).sectorTimes = sectorTimes;
                 
                 startnew(Api::PostRecordedData, fh);
+                */
             } else {
                  // Record current data
                 int timeSinceLastRecord = g_dojo.currentRaceTime - latestRecordedTime;

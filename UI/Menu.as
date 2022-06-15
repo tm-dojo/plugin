@@ -31,9 +31,11 @@ void RenderMenu()
             DebugOverlayEnabled = !DebugOverlayEnabled;
 		}
 
+        /*
         if (UI::MenuItem(OnlySaveFinished ? "[X]  Save finished runs only" : "[  ]  Save finished runs only", "", false, true)) {
             OnlySaveFinished = !OnlySaveFinished;
 		}
+        */
 
         if (!g_dojo.serverAvailable && !g_dojo.checkingServer) {
             if (UI::MenuItem("Check server", "", false, true)) {

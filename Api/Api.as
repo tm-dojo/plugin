@@ -126,12 +126,7 @@ namespace Api {
         string dataBase64 = g_dojo.membuff.ReadToBase64(g_dojo.membuff.GetSize());
         uint64 bufferSize = g_dojo.membuff.GetSize();
 
-        // Reset recording state, all data required to upload is available without the need of TMDojo instance
-        g_dojo.recording = false;
-        g_dojo.latestRecordedTime = -6666;
-        g_dojo.currentRaceTime = -6666;
-        g_dojo.membuff.Resize(0);
-        g_dojo.sectorTimes.Resize(0);
+        g_dojo.Reset();
 
         // Abort if server isn't available
         if (!g_dojo.serverAvailable) {
@@ -161,56 +156,54 @@ namespace Api {
         int endRaceTime = fh.endRaceTime;
         array<uint> sectorTimes = fh.sectorTimes;
 
-        if (!OnlySaveFinished || finished) {
-            print("[TMDojo]: Saving game data (size: " + bufferSize / 1024 + " kB)");
+        print("[TMDojo]: Saving game data (size: " + bufferSize / 1024 + " kB)");
 
-            // Setup request URL
-            string mapNameClean = Regex::Replace(rootMap.MapInfo.NameForUi, "\\$([0-9a-fA-F]{1,3}|[iIoOnNmMwWsSzZtTgG<>]|[lLhHpP](\\[[^\\]]+\\])?)", "").Replace(" ", "%20");
-            string reqUrl = ApiUrl + "/replays" +
-                                "?mapName=" + Net::UrlEncode(mapNameClean) +
-                                "&mapUId=" + rootMap.MapInfo.MapUid +
-                                "&authorName=" + rootMap.MapInfo.AuthorNickName +
-                                "&playerName=" + network.PlayerInfo.Name +
-                                "&playerLogin=" + network.PlayerInfo.Login +
-                                "&webId=" + network.PlayerInfo.WebServicesUserId +
-                                "&endRaceTime=" + endRaceTime +
-                                "&raceFinished=" + (finished ? "1" : "0") +
-                                "&pluginVersion=" + g_dojo.version;
-            
-            // If sector times are available, add them to the request URL
-            if (sectorTimes.Length > 0) {
-                reqUrl += "&sectorTimes=" + SectorTimesToString(sectorTimes);
-            }
+        // Setup request URL
+        string mapNameClean = Regex::Replace(rootMap.MapInfo.NameForUi, "\\$([0-9a-fA-F]{1,3}|[iIoOnNmMwWsSzZtTgG<>]|[lLhHpP](\\[[^\\]]+\\])?)", "").Replace(" ", "%20");
+        string reqUrl = ApiUrl + "/replays" +
+                            "?mapName=" + Net::UrlEncode(mapNameClean) +
+                            "&mapUId=" + rootMap.MapInfo.MapUid +
+                            "&authorName=" + rootMap.MapInfo.AuthorNickName +
+                            "&playerName=" + network.PlayerInfo.Name +
+                            "&playerLogin=" + network.PlayerInfo.Login +
+                            "&webId=" + network.PlayerInfo.WebServicesUserId +
+                            "&endRaceTime=" + endRaceTime +
+                            "&raceFinished=" + (finished ? "1" : "0") +
+                            "&pluginVersion=" + g_dojo.version;
+        
+        // If sector times are available, add them to the request URL
+        if (sectorTimes.Length > 0) {
+            reqUrl += "&sectorTimes=" + SectorTimesToString(sectorTimes);
+        }
 
-            // Build request instance
-            Net::HttpRequest req;
-            req.Method = Net::HttpMethod::Post;
-            req.Url = reqUrl;
+        // Build request instance
+        Net::HttpRequest req;
+        req.Method = Net::HttpMethod::Post;
+        req.Url = reqUrl;
 
-            // Set body to base64 encoded memory buffer
-            req.Body = dataBase64;
+        // Set body to base64 encoded memory buffer
+        req.Body = dataBase64;
 
-            // Build headers
-            dictionary@ Headers = dictionary();
-            Headers["Authorization"] = "dojo " + SessionId;
-            Headers["Content-Type"] = "application/octet-stream";
-            @req.Headers = Headers;
+        // Build headers
+        dictionary@ Headers = dictionary();
+        Headers["Authorization"] = "dojo " + SessionId;
+        Headers["Content-Type"] = "application/octet-stream";
+        @req.Headers = Headers;
 
-            // Start and wait until request is finished
-            req.Start();
-            while (!req.Finished()) {
-                yield();
-            }
+        // Start and wait until request is finished
+        req.Start();
+        while (!req.Finished()) {
+            yield();
+        }
 
-            // Handle error status codes
-            int status = req.ResponseCode();
-            if (status == 401) {
-                UI::ShowNotification("TMDojo", "Upload failed. Not authorized, please log in if you are not logged in.", ERROR_COLOR);
-            } else if (status != 200) {
-                UI::ShowNotification("TMDojo", "Upload failed, status code: " + status, ERROR_COLOR);
-            } else {
-                UI::ShowNotification("TMDojo", "Uploaded replay successfully!", SUCCESS_COLOR);
-            }
+        // Handle error status codes
+        int status = req.ResponseCode();
+        if (status == 401) {
+            UI::ShowNotification("TMDojo", "Upload failed. Not authorized, please log in if you are not logged in.", ERROR_COLOR);
+        } else if (status != 200) {
+            UI::ShowNotification("TMDojo", "Upload failed, status code: " + status, ERROR_COLOR);
+        } else {
+            UI::ShowNotification("TMDojo", "Uploaded replay successfully!", SUCCESS_COLOR);
         }
     }
 }

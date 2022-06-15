@@ -4,9 +4,6 @@ bool Enabled = true;
 [Setting name="TMDojoDevMode" description="Enable / Disable DevMode"]
 bool DevMode = false;
 
-[Setting name="TMDojoOnlySaveFinished" description="Only save race data when race is finished"]
-bool OnlySaveFinished = true;
-
 [Setting name="TMDojoApiUrl" description="TMDojo API Url"]
 string ApiUrl = REMOTE_API;
 
