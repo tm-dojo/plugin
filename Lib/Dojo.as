@@ -208,15 +208,15 @@ class TMDojo
                 // Finished track
                 print("[TMDojo]: Finished");
 
-                ref @fh = FinishHandle();
-                cast<FinishHandle>(fh).finished = true;
-                @cast<FinishHandle>(fh).rootMap = rootMap;
-                @cast<FinishHandle>(fh).uiConfig = uiConfig;
-                @cast<FinishHandle>(fh).smScript = smScript;
-                @cast<FinishHandle>(fh).network = network;
-                cast<FinishHandle>(fh).endRaceTime = latestRecordedTime;
-                cast<FinishHandle>(fh).sectorTimes = sectorTimes;
-                cast<FinishHandle>(fh).respawns = respawns;
+                FinishHandle@ finishHandle = cast<FinishHandle>(FinishHandle());
+                finishHandle.finished = true;
+                @finishHandle.rootMap = rootMap;
+                @finishHandle.uiConfig = uiConfig;
+                @finishHandle.smScript = smScript;
+                @finishHandle.network = network;
+                finishHandle.endRaceTime = latestRecordedTime;
+                finishHandle.sectorTimes = sectorTimes;
+                finishHandle.respawns = respawns;
 
                 // https://github.com/GreepTheSheep/openplanet-mx-random special thanks to greep for getting accurate endRaceTime
 
@@ -236,10 +236,10 @@ class TMDojo
                 } else endRaceTimeAccurate = -1;
 
                 if (endRaceTimeAccurate > 0) {
-                    cast<FinishHandle>(fh).endRaceTime = endRaceTimeAccurate;
+                    finishHandle.endRaceTime = endRaceTimeAccurate;
                 }
 
-                startnew(Api::PostRecordedData, fh);
+                startnew(Api::PostRecordedData, finishHandle);
             } else if (latestRecordedTime > 0 && g_dojo.currentRaceTime < 0) {
                 // Give up
                 print("[TMDojo]: Give up");
@@ -247,17 +247,17 @@ class TMDojo
                 g_dojo.Reset();
 
                 /*
-                ref @fh = FinishHandle();
-                cast<FinishHandle>(fh).finished = false;
-                @cast<FinishHandle>(fh).rootMap = rootMap;
-                @cast<FinishHandle>(fh).uiConfig = uiConfig;
-                @cast<FinishHandle>(fh).smScript = smScript;
-                @cast<FinishHandle>(fh).network = network;
-                cast<FinishHandle>(fh).endRaceTime = latestRecordedTime;
-                cast<FinishHandle>(fh).sectorTimes = sectorTimes;
-                cast<FinishHandle>(fh).respawns = respawns;
+                FinishHandle@ finishHandle = cast<FinishHandle>(FinishHandle());
+                finishHandle.finished = false;
+                @finishHandle.rootMap = rootMap;
+                @finishHandle.uiConfig = uiConfig;
+                @finishHandle.smScript = smScript;
+                @finishHandle.network = network;
+                finishHandle.endRaceTime = latestRecordedTime;
+                finishHandle.sectorTimes = sectorTimes;
+                finishHandle.respawns = respawns;
                 
-                startnew(Api::PostRecordedData, fh);
+                startnew(Api::PostRecordedData, finishHandle);
                 */
             } else {
                  // Record current data
