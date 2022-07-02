@@ -7,9 +7,9 @@ void Main() {
 
 void Update(float dt) {
     if (g_dojo !is null && Enabled) {
-		g_dojo.Render();
+		g_dojo.Update(dt);
 	}
-
+    
     DependencyNotifier::NotifyMissingPlayerStateDependency();
 }
 

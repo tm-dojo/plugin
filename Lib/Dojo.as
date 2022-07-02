@@ -9,6 +9,7 @@ class TMDojo
     CTrackManiaNetwork@ network;
 
     array<uint> sectorTimes;
+    uint respawns;
 
     // Player info
     string playerName;
@@ -109,7 +110,7 @@ class TMDojo
         membuff.Write(vis.RRDamperLen);
     }
 
-    void Render()
+    void Update(float dt)
 	{
         // Do not start recording if the user is not authenticated or doesn't even have a SessionId
         if (!pluginAuthed || SessionId == "") {
@@ -187,6 +188,12 @@ class TMDojo
             }
         }
 
+        if (@smScript.Score != null) {
+            respawns = smScript.Score.NbRespawnsRequested;
+        } else {
+            respawns = 0;
+        }
+
         if (Enabled && OverlayEnabled && !hudOff) {     
             drawRecordingOverlay();
         }
@@ -209,6 +216,7 @@ class TMDojo
                 @cast<FinishHandle>(fh).network = network;
                 cast<FinishHandle>(fh).endRaceTime = latestRecordedTime;
                 cast<FinishHandle>(fh).sectorTimes = sectorTimes;
+                cast<FinishHandle>(fh).respawns = respawns;
 
                 // https://github.com/GreepTheSheep/openplanet-mx-random special thanks to greep for getting accurate endRaceTime
 
@@ -247,6 +255,7 @@ class TMDojo
                 @cast<FinishHandle>(fh).network = network;
                 cast<FinishHandle>(fh).endRaceTime = latestRecordedTime;
                 cast<FinishHandle>(fh).sectorTimes = sectorTimes;
+                cast<FinishHandle>(fh).respawns = respawns;
                 
                 startnew(Api::PostRecordedData, fh);
                 */

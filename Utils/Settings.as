@@ -21,3 +21,6 @@ bool DebugOverlayEnabled = false;
 
 [Setting name="TMDojoOverlayEnabled" description="Enable / Disable overlay"]
 bool OverlayEnabled = true;
+
+[Setting name="TMDojoSaveReplaysWithRespawns" description="Enable / Disable saving replays including respawns"]
+bool SaveReplaysWithRespawns = true;

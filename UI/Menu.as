@@ -31,11 +31,9 @@ void RenderMenu()
             DebugOverlayEnabled = !DebugOverlayEnabled;
 		}
 
-        /*
-        if (UI::MenuItem(OnlySaveFinished ? "[X]  Save finished runs only" : "[  ]  Save finished runs only", "", false, true)) {
-            OnlySaveFinished = !OnlySaveFinished;
+        if (UI::MenuItem(SaveReplaysWithRespawns ? "[X]  Save replays with respawns" : "[  ]  Save replays with respawns", "", false, true)) {
+            SaveReplaysWithRespawns = !SaveReplaysWithRespawns;
 		}
-        */
 
         if (!g_dojo.serverAvailable && !g_dojo.checkingServer) {
             if (UI::MenuItem("Check server", "", false, true)) {

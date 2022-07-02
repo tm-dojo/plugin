@@ -145,9 +145,16 @@ namespace Api {
             print("[TMDojo]: Not saving file, too little data");
             return;
         }
+
+        FinishHandle @fh = cast<FinishHandle>(handle);
+
+        // Abort save if replays contains respawns and settings is enabled to not upload replays with respawns
+        if (!SaveReplaysWithRespawns && fh.respawns > 0) {
+            print("[TMDojo]: Not saving file, replay contains respawns");
+            return;
+        }
        
         // Setup variables for upload
-        FinishHandle @fh = cast<FinishHandle>(handle);
         bool finished = fh.finished;
         CSmScriptPlayer@ smScript = fh.smScript;
         CGamePlaygroundUIConfig@ uiConfig = fh.uiConfig;
@@ -157,6 +164,8 @@ namespace Api {
         array<uint> sectorTimes = fh.sectorTimes;
 
         print("[TMDojo]: Saving game data (size: " + bufferSize / 1024 + " kB)");
+
+        return;
 
         // Setup request URL
         string mapNameClean = Regex::Replace(rootMap.MapInfo.NameForUi, "\\$([0-9a-fA-F]{1,3}|[iIoOnNmMwWsSzZtTgG<>]|[lLhHpP](\\[[^\\]]+\\])?)", "").Replace(" ", "%20");
