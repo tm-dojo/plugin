@@ -7,4 +7,5 @@ class FinishHandle
     CTrackManiaNetwork@ network;
     int endRaceTime;
     array<uint> sectorTimes;
+    uint respawns;
 }
