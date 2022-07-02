@@ -165,8 +165,6 @@ namespace Api {
 
         print("[TMDojo]: Saving game data (size: " + bufferSize / 1024 + " kB)");
 
-        return;
-
         // Setup request URL
         string mapNameClean = Regex::Replace(rootMap.MapInfo.NameForUi, "\\$([0-9a-fA-F]{1,3}|[iIoOnNmMwWsSzZtTgG<>]|[lLhHpP](\\[[^\\]]+\\])?)", "").Replace(" ", "%20");
         string reqUrl = ApiUrl + "/replays" +
