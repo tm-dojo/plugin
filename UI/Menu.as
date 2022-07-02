@@ -1,3 +1,15 @@
+string CheckMarkIcon(bool checked)
+{
+    return checked
+        ? Icons::CheckSquareO
+        : Icons::SquareO;
+}
+
+string CheckMarkWithLabel(bool checked, string label)
+{
+    return CheckMarkIcon(checked) + "  " + label;
+}
+
 void RenderMenu()
 {
     string menuTitle = "";
@@ -23,15 +35,15 @@ void RenderMenu()
             startnew(Api::checkServerWaitForValidWebId);
 		}
 
-        if (UI::MenuItem(OverlayEnabled ? "[X]  Overlay" : "[  ]  Overlay", "", false, true)) {
+        if (UI::MenuItem(CheckMarkWithLabel(OverlayEnabled, "Overlay"), "", false, true)) {
             OverlayEnabled = !OverlayEnabled;
 		}
 
-        if (DevMode && UI::MenuItem(DebugOverlayEnabled ? "[X]  Debug Overlay" : "[  ]  Debug Overlay", "", false, true)) {
+        if (DevMode && UI::MenuItem(CheckMarkWithLabel(DebugOverlayEnabled, "Debug Overlay"), "", false, true)) {
             DebugOverlayEnabled = !DebugOverlayEnabled;
 		}
 
-        if (UI::MenuItem(SaveReplaysWithRespawns ? "[X]  Save replays with respawns" : "[  ]  Save replays with respawns", "", false, true)) {
+        if (UI::MenuItem(CheckMarkWithLabel(SaveReplaysWithRespawns, "Save replays with respawns") , "", false, true)) {
             SaveReplaysWithRespawns = !SaveReplaysWithRespawns;
 		}
 
