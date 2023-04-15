@@ -12,7 +12,7 @@ void renderAuthWindow() {
         UI::Text("If it takes a bit longer, you can just press the button again (if you're already logged in, it's just gonna take a second).");
         UI::Text("");
         if (!g_dojo.isAuthenticating && UI::Button("Authenticate Plugin")) {
-            Api::authenticatePlugin();
+            Api::authenticatePluginWithBrowser();
         }
         if (g_dojo.isAuthenticating) {
             UI::Text("Awaiting authentication, " + (MAX_CHECK_SESSION_ID - g_dojo.checkSessionIdCount) + " seconds remaining");

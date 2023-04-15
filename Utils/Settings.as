@@ -16,6 +16,9 @@ string ClientCode = "";
 [Setting password name="TMDojoSessionId" description="TMDojo plugin SessionId"]
 string SessionId = "";
 
+[Setting password name="TMDojoAccessToken" description="TMDojo plugin AccessToken"]
+string AccessToken = "";
+
 [Setting name="TMDojoDebugOverlayEnabled" description="Enable / Disable debug overlay"]
 bool DebugOverlayEnabled = false;
 
