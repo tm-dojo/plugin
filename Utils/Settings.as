@@ -10,12 +10,6 @@ string ApiUrl = REMOTE_API;
 [Setting name="TMDojoUiUrl" description="TMDojo Ui Url"]
 string UiUrl = REMOTE_UI;
 
-[Setting password name="TMDojoClientCode" description="TMDojo plugin Client Code"]
-string ClientCode = "";
-
-[Setting password name="TMDojoSessionId" description="TMDojo plugin SessionId"]
-string SessionId = "";
-
 [Setting password name="TMDojoAccessToken" description="TMDojo plugin AccessToken"]
 string AccessToken = "";
 
