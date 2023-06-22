@@ -10,7 +10,7 @@ void Update(float dt) {
 		g_dojo.Update(dt);
 	}
     
-    DependencyNotifier::NotifyMissingPlayerStateDependency();
+    // DependencyNotifier::NotifyMissingPlayerStateDependency();
 }
 
 void RenderInterface() {
