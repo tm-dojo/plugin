@@ -7,4 +7,4 @@ siteid = 180
 
 [script]
 dependencies = [ "VehicleState" ]
-optional_dependencies = [ "PlayerState" ]
+optional_dependencies = [ ]
