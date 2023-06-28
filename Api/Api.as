@@ -1,109 +1,120 @@
 namespace Api {
+
+    void fetchAccessTokenAsync() {
+        if (AccessToken != "") {
+            print("Access token already set, skipping authentication.");
+            return;
+        }   
+
+        // Start the task to get the token from Openplanet
+        print("Getting token from Openplanet");
+        Auth::PluginAuthTask@ tokenTask = Auth::GetToken();
+
+        // Wait until the task has finished
+        while (!tokenTask.Finished()) {
+            yield();
+        }
+
+        // Take the token
+        string token = tokenTask.Token();
+        trace("Token: \"" + token + "\"");
+
+        // Send it to the shoutbox server
+        Net::HttpRequest@ req = Net::HttpPost(
+            ApiUrl + "/auth/login/plugin" + "?pluginVersion=" + g_dojo.version,
+            "token=" + Net::UrlEncode(token)
+        );
+        while (!req.Finished()) {
+            yield();
+        }
+        
+        if (req.ResponseCode() != 200 && req.ResponseCode() != 201) {
+            error("Unable to authenticate, http error " + req.ResponseCode());
+            return;
+        }
+
+        // Parse the server response
+        Json::Value json = Json::Parse(req.String());
+
+        // Keep track of our information, including a secret that we can use to authenticate ourselves with the shoutbox server
+        // g_accountID = js["account_id"];
+        // g_displayName = js["display_name"];
+        AccessToken = json["access_token"];
+    }
     
     // Workaround method for checkServer to ensure checkServer is only called when webId and playerLogin are not the equal
-    void checkServerWaitForValidWebId() {
+    void authenticatePluginWaitForValidWebId() {
         while (g_dojo.network.PlayerInfo.Login == g_dojo.network.PlayerInfo.WebServicesUserId) {
             sleep(50);
             yield();
         }
 
-        startnew(Api::checkServer);
+        startnew(Api::authenticatePlugin);
     }
 
-    void checkServer() {
+    void authenticatePlugin() {
         g_dojo.checkingServer = true;
+
         g_dojo.playerName = g_dojo.network.PlayerInfo.Name;
         g_dojo.playerLogin = g_dojo.network.PlayerInfo.Login;
         g_dojo.webId = g_dojo.network.PlayerInfo.WebServicesUserId;
 
-        Net::HttpRequest@ auth = Net::HttpGet(ApiUrl + "/auth?name=" + g_dojo.playerName + "&login=" + g_dojo.playerLogin + "&webid=" + g_dojo.webId + "&sessionId=" + SessionId + "&pluginVersion=" + g_dojo.version);
-        while (!auth.Finished()) {
+        fetchAccessTokenAsync();
+
+        Net::HttpRequest@ req = Net::HttpRequest();
+        req.Method = Net::HttpMethod::Get;
+        req.Url = ApiUrl + "/auth/me" + "?pluginVersion=" + g_dojo.version;
+        req.Headers["Authorization"] = "Bearer " + AccessToken;
+        req.Start();
+
+        print("Starting /auth/me request...");
+        while (!req.Finished()) {
             yield();
-            sleep(50);
         }
-        if (auth.String().get_Length() > 0) {
-            Json::Value json = Json::Parse(auth.String());
 
-            if (json.GetType() != Json::Type::Null) {
-                print("HasKey authUrl: " + json.HasKey("authURL"));
-                print("HasKey authSuccess: " + json.HasKey("authSuccess"));
-
-                if (json.HasKey("authURL")) {
-                    try {
-                        g_dojo.pluginAuthUrl = json["authURL"];
-                        ClientCode = json["clientCode"];
-                        SessionId = "";
-                        UI::ShowNotification("TMDojo", "Plugin needs authentication!\n\nF3 → Scripts → TMDojo → Authenticate Plugin", 10000);
-                    } catch {
-                        error("checkServer json error");
-                    }
-                }
-                if (json.HasKey("authSuccess")) {
-                    g_dojo.pluginAuthed = true;
-                    UI::ShowNotification("TMDojo", "Plugin is authenticated!", SUCCESS_COLOR);
-                }
-            } else {
-                UI::ShowNotification("TMDojo", "checkServer() Error: Json response is null", ERROR_COLOR);
-            }
+        if (req.ResponseCode() == 200) {
+            g_dojo.pluginAuthed = true;
+            print("Plugin authenticated!");
             
-            g_dojo.serverAvailable = true;
+            // Parse server response and display welcome message
+            Json::Value json = Json::Parse(req.String());
+            string playerName = json["playerName"];
+            UI::ShowNotification("TMDojo", "Plugin authenticated!\n\nWelcome, " + playerName + "!", SUCCESS_COLOR);
         } else {
-            g_dojo.serverAvailable = false;
+            g_dojo.pluginAuthed = false;
+            UI::ShowNotification("TMDojo", "Plugin authentication failed. Error code: " + req.ResponseCode(), ERROR_COLOR);
+            print("Plugin authentication failed, status code: " + req.ResponseCode());
         }
+
+        g_dojo.serverAvailable = req.String().Length > 0;
+
         g_dojo.checkingServer = false;
     }
 
     void logout() {
-        string logoutBody = "{\"sessionId\":\"" + SessionId + "\"}";
-        Net::HttpRequest@ req = Net::HttpPost(ApiUrl + "/logout?pluginVersion=" + g_dojo.version, logoutBody, "application/json");
+        // Setup logout request
+        Net::HttpRequest@ req = Net::HttpRequest();
+        req.Method = Net::HttpMethod::Post;
+        req.Url = ApiUrl + "/auth/logout" + "?pluginVersion=" + g_dojo.version;
+        req.Headers["Authorization"] = "Bearer " + AccessToken;
+        req.Start();
+
+        // Wait until the request has finished
         while (!req.Finished()) {
             yield();
-            sleep(50);
         }
         
+        // Notify user if logout failed
         int status = req.ResponseCode();
-        if (status == 200) {
-            UI::ShowNotification("TMDojo", "Plugin logged out!", SUCCESS_COLOR);
-            SessionId = "";
-            g_dojo.pluginAuthed = false;
-            startnew(Api::checkServerWaitForValidWebId);
-        } else {
+        if (status != 200 && status != 201) {
             UI::ShowNotification("TMDojo", "Failed to logout, please try again!", ERROR_COLOR);
+            return;
         }
-    }
 
-    void authenticatePlugin() {
-        OpenBrowserURL(g_dojo.pluginAuthUrl);
-        startnew(getPluginAuth);
-    }
-
-    void getPluginAuth() {
-        g_dojo.isAuthenticating = true;
-        while (g_dojo.checkSessionIdCount < MAX_CHECK_SESSION_ID) {
-            sleep(1000);
-            g_dojo.checkSessionIdCount++;
-            Net::HttpRequest@ auth = Net::HttpGet(ApiUrl + "/auth/pluginSecret?clientCode=" + ClientCode+ "&pluginVersion=" + g_dojo.version);
-            while (!auth.Finished()) {
-                yield();
-                sleep(50);
-            }
-            try {
-                Json::Value json = Json::Parse(auth.String());
-                SessionId = json["sessionId"];
-                UI::ShowNotification("TMDojo", "Plugin is authenticated!", SUCCESS_COLOR, 10000);
-                g_dojo.pluginAuthed = true;
-                g_dojo.checkSessionIdCount = 0;
-                ClientCode = "";
-                break;
-            } catch {
-                
-            }
-        }
-        g_dojo.isAuthenticating = false;
-        if (g_dojo.checkSessionIdCount >= MAX_CHECK_SESSION_ID) {
-            UI::ShowNotification("TMDojo", "Plugin authentication took too long, please try again", ERROR_COLOR, 10000);
-            g_dojo.checkSessionIdCount = 0;
-        }
+        // Notify user of logout and update fields
+        UI::ShowNotification("TMDojo", "Plugin logged out!", SUCCESS_COLOR);
+        AccessToken = "";
+        g_dojo.pluginAuthed = false;
     }
 
     // Parse list of uint values as a string joined by a comma delimiter
@@ -193,7 +204,7 @@ namespace Api {
 
         // Build headers
         dictionary@ Headers = dictionary();
-        Headers["Authorization"] = "dojo " + SessionId;
+        Headers["Authorization"] = "Bearer " + AccessToken;
         Headers["Content-Type"] = "application/octet-stream";
         @req.Headers = Headers;
 

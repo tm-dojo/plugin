@@ -24,10 +24,6 @@ class TMDojo
     bool serverAvailable = false;
     bool checkingServer = false;
 
-    // Session
-    int checkSessionIdCount = 0;
-    int maxCheckSessionId = 60;
-
     // Plugin info
     Meta::Plugin@ plugin = Meta::ExecutingPlugin();
     string version = plugin.Version;
@@ -41,7 +37,7 @@ class TMDojo
     TMDojo() {
         auto app = GetApp();
         @network = cast<CTrackManiaNetwork>(app.Network);
-        startnew(Api::checkServerWaitForValidWebId);
+        startnew(Api::authenticatePluginWaitForValidWebId);
     }
 
     void Reset() {
@@ -112,8 +108,8 @@ class TMDojo
 
     void Update(float dt)
 	{
-        // Do not start recording if the user is not authenticated or doesn't even have a SessionId
-        if (!pluginAuthed || SessionId == "") {
+        // Do not start recording if the user is not authenticated or doesn't have a AccessToken
+        if (!pluginAuthed || AccessToken == "") {
             return;
         }
         
