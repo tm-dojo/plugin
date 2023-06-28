@@ -113,17 +113,18 @@ class TMDojo
             return;
         }
         
-#if DEPENDENCY_PLAYERSTATE
+// Removed PlayerState sector times until a more permanent solution for sector times is made
+// #if DEPENDENCY_PLAYERSTATE
         // Track CP times
-        PlayerState::sTMData@ TMData = PlayerState::GetRaceData();
-        if(TMData.dEventInfo.CheckpointChange && 
-            TMData.dPlayerInfo.NumberOfCheckpointsPassed < uint(TMData.dMapInfo.NumberOfCheckpoints + 1)) {
-            sectorTimes.InsertLast(TMData.dPlayerInfo.LatestCPTime);
-        }
-        if(TMData.dEventInfo.PlayerStateChange && TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Countdown) {
-            sectorTimes.Resize(0);
-        }
-#endif
+        // PlayerState::sTMData@ TMData = PlayerState::GetRaceData();
+        // if(TMData.dEventInfo.CheckpointChange && 
+        //     TMData.dPlayerInfo.NumberOfCheckpointsPassed < uint(TMData.dMapInfo.NumberOfCheckpoints + 1)) {
+        //     sectorTimes.InsertLast(TMData.dPlayerInfo.LatestCPTime);
+        // }
+        // if(TMData.dEventInfo.PlayerStateChange && TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Countdown) {
+        //     sectorTimes.Resize(0);
+        // }
+// #endif
 
 
 		auto app = GetApp();

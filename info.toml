@@ -2,9 +2,9 @@
 name = "TMDojo"
 author = "TeamDojo"
 category = "Utilities"
-version = "0.6.0"
+version = "0.7.0"
 siteid = 180
 
 [script]
 dependencies = [ "VehicleState" ]
-optional_dependencies = [ "PlayerState" ]
+optional_dependencies = [ ]
